@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Chat</title>
+    <style>
+        .chat-box { max-width: 500px; margin: auto; }
+        .messages { max-height: 300px; overflow-y: auto; }
+        .sent { text-align: right; }
+        .received { text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="chat-box">
+    <div class="messages"></div>
+    <input type="text" id="message-input" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+<script>
+    const socket = io.connect("ws://localhost:8000/ws/chat/");
+
+    function sendMessage() {
+        const message = document.getElementById("message-input").value;
+        socket.send(JSON.stringify({ 'message': message }));
+    }
+
+    socket.on("chat_message", function(event) {
+        const messageElement = document.createElement("div");
+        messageElement.className = 'received';
+        messageElement.innerText = event.message;
+        document.querySelector(".messages").appendChild(messageElement);
+    });
+</script>
+
+</body>
+</html>
